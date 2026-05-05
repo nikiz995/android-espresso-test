@@ -1,6 +1,7 @@
 default_platform(:android)
 
 platform :android do
+
   desc "Build the debug app and Android test APKs"
   lane :build_tests do
     gradle(
@@ -20,14 +21,23 @@ platform :android do
     )
   end
 
-  desc "Run Android tests and pull captured screenshots into the test report folder"
+  desc "Run Android tests and print report + screenshots path"
   lane :screenshots do
     gradle(
       task: "connectedAndroidTest",
       project_dir: "."
     )
 
-    screenshots_path = File.expand_path("../app/build/reports/androidTests/connected/screenshots", __dir__)
+    report_path = File.expand_path(
+      "../app/build/reports/androidTests/connected/index.html",
+      __dir__
+    )
+    UI.message("Android test report: #{report_path}")
+
+    screenshots_path = File.expand_path(
+      "../app/build/reports/androidTests/connected/screenshots",
+      __dir__
+    )
     UI.message("Android test screenshots: #{screenshots_path}")
   end
 
@@ -41,18 +51,21 @@ platform :android do
 
   desc "Print the Android test report location"
   lane :report do
-    report_path = File.expand_path("../app/build/reports/androidTests/connected/index.html", __dir__)
+    report_path = File.expand_path(
+      "../app/build/reports/androidTests/connected/index.html",
+      __dir__
+    )
     UI.message("Android test report: #{report_path}")
   end
-  
-  desc "Run only Cucumber scenarios tagged name"
+
+  desc "Run only Cucumber scenarios with specific tag (@r1)"
   lane :test_tags do
     gradle(
-     task: "connectedAndroidTest",
-     project_dir: ".",
+      task: "connectedAndroidTest",
+      project_dir: ".",
       properties: {
-      "android.testInstrumentationRunnerArguments.tags" => "@r1"
-    }
+        "android.testInstrumentationRunnerArguments.tags" => "@r1"
+      }
     )
   end
 
@@ -77,4 +90,5 @@ platform :android do
       puts "Force clean completed"
     end
   end
+
 end

@@ -37,7 +37,7 @@ Run all Cucumber Espresso scenarios on the connected device
 [bundle exec] fastlane android screenshots
 ```
 
-Run Android tests and pull captured screenshots into the test report folder
+Run Android tests and print report + screenshots path
 
 ### android clean
 
@@ -61,7 +61,7 @@ Print the Android test report location
 [bundle exec] fastlane android test_tags
 ```
 
-Run only Cucumber scenarios tagged name
+Run only Cucumber scenarios with specific tag (@r1)
 
 ### android force_clean
 

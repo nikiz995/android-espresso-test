@@ -5,6 +5,6 @@ import io.cucumber.junit.CucumberOptions
 @CucumberOptions(
         features = ["features"],
         glue = ["com.abnamro.apps.referenceandroid.steps"],
-        tags = ["@ui"]
+        tags = ["@regression"]
 )
 class CucumberTestOptions
