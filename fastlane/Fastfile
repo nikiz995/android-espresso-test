@@ -1,0 +1,80 @@
+default_platform(:android)
+
+platform :android do
+  desc "Build the debug app and Android test APKs"
+  lane :build_tests do
+    gradle(
+      tasks: [
+        "assembleDebug",
+        "assembleDebugAndroidTest"
+      ],
+      project_dir: "."
+    )
+  end
+
+  desc "Run all Cucumber Espresso scenarios on the connected device"
+  lane :test do
+    gradle(
+      task: "connectedAndroidTest",
+      project_dir: "."
+    )
+  end
+
+  desc "Run Android tests and pull captured screenshots into the test report folder"
+  lane :screenshots do
+    gradle(
+      task: "connectedAndroidTest",
+      project_dir: "."
+    )
+
+    screenshots_path = File.expand_path("../app/build/reports/androidTests/connected/screenshots", __dir__)
+    UI.message("Android test screenshots: #{screenshots_path}")
+  end
+
+  desc "Remove generated build outputs, test reports, and screenshots"
+  lane :clean do
+    gradle(
+      task: "clean",
+      project_dir: "."
+    )
+  end
+
+  desc "Print the Android test report location"
+  lane :report do
+    report_path = File.expand_path("../app/build/reports/androidTests/connected/index.html", __dir__)
+    UI.message("Android test report: #{report_path}")
+  end
+  
+  desc "Run only Cucumber scenarios tagged name"
+  lane :test_tags do
+    gradle(
+     task: "connectedAndroidTest",
+     project_dir: ".",
+      properties: {
+      "android.testInstrumentationRunnerArguments.tags" => "@r1"
+    }
+    )
+  end
+
+  desc "Force clean build folders on Windows"
+  lane :force_clean do
+    project_root = File.expand_path("..", __dir__)
+
+    Dir.chdir(project_root) do
+      puts "Project root: #{project_root}"
+
+      puts "Stopping Gradle"
+      sh("gradlew.bat --stop || echo Gradle not running")
+
+      puts "Killing Java and ADB"
+      sh("taskkill /F /IM java.exe || echo Java not running")
+      sh("taskkill /F /IM adb.exe || echo ADB not running")
+
+      puts "Deleting build folders"
+      sh("cmd /c if exist app\\build rmdir /s /q app\\build")
+      sh("cmd /c if exist build rmdir /s /q build")
+
+      puts "Force clean completed"
+    end
+  end
+end

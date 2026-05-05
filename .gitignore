@@ -1,0 +1,39 @@
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE and editor state
+.idea/
+.vscode/
+*.code-workspace
+*.iml
+*.ipr
+*.iws
+
+# Android and Gradle generated files
+.gradle/
+.gradle-user-home/
+build/
+*/build/
+captures/
+.externalNativeBuild/
+.cxx/
+
+# Local machine configuration
+local.properties
+
+# Build artifacts
+*.apk
+*.ap_
+*.aab
+*.aar
+*.dex
+
+# Logs
+*.log
+
+# Fastlane generated output
+fastlane/report.xml
+fastlane/Preview.html
+fastlane/screenshots/
+fastlane/test_output/

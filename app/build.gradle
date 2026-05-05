@@ -1,0 +1,75 @@
+plugins {
+    id 'com.android.application'
+    id 'kotlin-android'
+    id 'kotlin-android-extensions'
+}
+
+android {
+    compileSdkVersion 29
+    defaultConfig {
+        applicationId "com.abnamro.apps.referenceandroid"
+        minSdkVersion 22
+        targetSdkVersion 29
+        versionCode 1
+        versionName "1.0"
+        testInstrumentationRunner 'io.cucumber.android.runner.CucumberAndroidJUnitRunner'
+        //testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
+        testInstrumentationRunnerArguments optionsAnnotationPackage: 'com.abnamro.apps.referenceandroid.test'
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    kotlinOptions {
+        jvmTarget = '1.8'
+    }
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation"org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+    implementation 'androidx.appcompat:appcompat:1.2.0'
+    implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
+    implementation 'com.google.android.material:material:1.2.0'
+    testImplementation 'junit:junit:4.12'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.1'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
+    androidTestImplementation 'io.cucumber:cucumber-android:4.8.1'
+    androidTestImplementation 'io.cucumber:cucumber-java:4.8.1'
+}
+
+task pullAndroidTestScreenshots {
+    group = 'verification'
+    description = 'Pulls screenshots captured during connected Android tests into the test report folder.'
+
+    doLast {
+        def reportScreenshotsDir = file("$buildDir/reports/androidTests/connected/screenshots")
+        reportScreenshotsDir.mkdirs()
+
+        def result = exec {
+            executable 'adb'
+            args 'pull',
+                    '/sdcard/Download/referenceandroid-test-screenshots/.',
+                    reportScreenshotsDir.absolutePath
+            ignoreExitValue true
+        }
+
+        if (result.exitValue != 0) {
+            logger.lifecycle('No Android test screenshots were pulled. Run connectedAndroidTest after screenshot capture is enabled.')
+        } else {
+            logger.lifecycle("Android test screenshots copied to: ${reportScreenshotsDir}")
+        }
+    }
+}
+
+afterEvaluate {
+    tasks.matching { it.name.startsWith('connected') && it.name.endsWith('AndroidTest') }.all {
+        finalizedBy pullAndroidTestScreenshots
+    }
+}
