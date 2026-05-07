@@ -9,8 +9,7 @@ pipeline {
 
         stage('Checkout') {
             steps {
-                git branch: 'main',
-                    url: 'https://github.com/nikiz995/android-espresso-test.git'
+                     echo 'Code already checked out from Git SCM'
             }
         }
 
