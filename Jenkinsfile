@@ -3,7 +3,6 @@ pipeline {
 
     environment {
         AVD_NAME = "Pixel_6"
-        PATH = "C:\\Ruby40-x64\\bin;${env.PATH}"
     }
 
     stages {
@@ -15,15 +14,15 @@ pipeline {
             }
         }
 
-        stage('Force Clean') {
+        stage('Clean') {
             steps {
-                bat 'C:\\Ruby40-x64\\bin\\fastlane.bat android force_clean'
+                bat 'gradlew.bat clean'
             }
         }
 
         stage('Build APKs') {
             steps {
-                bat 'C:\\Ruby40-x64\\bin\\fastlane.bat android build_tests'
+                bat 'gradlew.bat assembleDebug assembleDebugAndroidTest'
             }
         }
 
@@ -31,16 +30,19 @@ pipeline {
             steps {
                 bat '''
                 start /B emulator -avd %AVD_NAME% -no-snapshot -no-audio -no-boot-anim
+
                 adb wait-for-device
+
                 timeout /t 20
+
                 adb shell input keyevent 82
                 '''
             }
         }
 
-        stage('Run Espresso Tests and Screenshots') {
+        stage('Run Espresso Tests') {
             steps {
-                bat 'C:\\Ruby40-x64\\bin\\fastlane.bat android screenshots'
+                bat 'gradlew.bat connectedAndroidTest'
             }
         }
     }
