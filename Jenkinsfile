@@ -2,10 +2,11 @@ pipeline {
     agent any
 
     environment {
-        AVD_NAME = "Pixel_6_API_35"
+        AVD_NAME = "Pixel_6"
     }
 
     stages {
+
         stage('Checkout') {
             steps {
                 git branch: 'main',
@@ -15,13 +16,13 @@ pipeline {
 
         stage('Force Clean') {
             steps {
-                bat 'bundle exec fastlane android force_clean'
+                bat 'fastlane android force_clean'
             }
         }
 
         stage('Build APKs') {
             steps {
-                bat 'bundle exec fastlane android build_tests'
+                bat 'fastlane android build_tests'
             }
         }
 
@@ -32,12 +33,7 @@ pipeline {
 
                 adb wait-for-device
 
-                :checkboot
-                for /f "tokens=*" %%i in ('adb shell getprop sys.boot_completed') do set boot=%%i
-                if not "%boot%"=="1" (
-                    timeout /t 5
-                    goto checkboot
-                )
+                timeout /t 20
 
                 adb shell input keyevent 82
                 '''
@@ -46,19 +42,22 @@ pipeline {
 
         stage('Run Espresso Tests and Screenshots') {
             steps {
-                bat 'bundle exec fastlane android screenshots'
+                bat 'fastlane android screenshots'
             }
         }
     }
 
     post {
         always {
-            bat 'adb emu kill || exit /b 0'
+
+            bat 'adb devices'
 
             archiveArtifacts artifacts: 'app/build/reports/androidTests/connected/**', allowEmptyArchive: true
+
             archiveArtifacts artifacts: 'app/build/outputs/androidTest-results/**', allowEmptyArchive: true
 
-            junit allowEmptyResults: true, testResults: 'app/build/outputs/androidTest-results/connected/**/*.xml'
+            junit allowEmptyResults: true,
+                   testResults: 'app/build/outputs/androidTest-results/connected/**/*.xml'
         }
     }
 }
