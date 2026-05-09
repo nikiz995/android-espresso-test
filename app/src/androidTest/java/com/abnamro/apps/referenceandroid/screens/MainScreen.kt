@@ -1,29 +1,29 @@
 package com.abnamro.apps.referenceandroid.screens
 
-import android.view.KeyEvent
-import androidx.annotation.StringRes
-import androidx.test.espresso.Espresso.onView
+import androidx.test.espresso.Espresso.openActionBarOverflowOrOptionsMenu
 import androidx.test.espresso.Espresso.pressBack
-import androidx.test.espresso.action.ViewActions.click
-import androidx.test.espresso.action.ViewActions.pressKey
-import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
-import androidx.test.espresso.matcher.ViewMatchers.isRoot
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.matcher.ViewMatchers.withText
-import androidx.test.espresso.Espresso.openActionBarOverflowOrOptionsMenu
 import androidx.test.platform.app.InstrumentationRegistry
 import com.abnamro.apps.referenceandroid.R
-import org.hamcrest.Matcher
 import org.hamcrest.Matchers.allOf
 
-class MainScreen {
+/**
+ * Page Object Model class for the main screen.
+ *
+ * Responsibilities:
+ * 1. Store locators for this screen.
+ * 2. Expose user actions on this screen.
+ * 3. Expose screen-level assertions.
+ *
+ * Step definitions should call these methods instead of directly using Espresso.
+ */
+class MainScreen : BaseScreen() {
 
     // =========================
     // Locators
     // =========================
-
-    private val rootView = isRoot()
 
     private val floatingActionButton =
         allOf(withId(R.id.fab), isDisplayed())
@@ -34,7 +34,8 @@ class MainScreen {
     private val snackbarMessage =
         allOf(
             withId(com.google.android.material.R.id.snackbar_text),
-            withText("Replace with your own action")
+            withText("Replace with your own action"),
+            isDisplayed()
         )
 
     // =========================
@@ -42,22 +43,26 @@ class MainScreen {
     // =========================
 
     fun openSettingsMenu() = apply {
-    openActionBarOverflowOrOptionsMenu(
-        InstrumentationRegistry.getInstrumentation().targetContext
-    )
-}
+        logStep("Open settings overflow menu")
+
+        openActionBarOverflowOrOptionsMenu(
+            InstrumentationRegistry.getInstrumentation().targetContext
+        )
+    }
 
     fun selectSettings() = apply {
-        onView(settingsMenuOption)
-            .perform(click())
+        logStep("Select settings menu option")
+        clickElement(settingsMenuOption)
     }
 
     fun tapFloatingActionButton() = apply {
-        onView(floatingActionButton)
-            .perform(click())
+        logStep("Tap floating action button")
+        clickElement(floatingActionButton)
     }
 
     fun tapFloatingActionButton(times: Int) = apply {
+        logStep("Tap floating action button $times time(s)")
+
         repeat(times) {
             tapFloatingActionButton()
             verifySnackbarMessageIsDisplayed()
@@ -65,10 +70,13 @@ class MainScreen {
     }
 
     fun pressDeviceBack() = apply {
+        logStep("Press device back")
         pressBack()
     }
 
     fun performRepeatedMixedInteractions() = apply {
+        logStep("Perform repeated mixed interactions")
+
         tapFloatingActionButton()
         openSettingsMenu()
         pressDeviceBack()
@@ -82,29 +90,17 @@ class MainScreen {
     // =========================
 
     fun verifyToolbarTitleIsDisplayed() = apply {
-        verifyTextIsDisplayed(R.string.app_name)
+        logStep("Verify toolbar title is displayed")
+        verifyTextDisplayed(R.string.app_name)
     }
 
     fun verifyWelcomeMessageIsDisplayed() = apply {
-        verifyTextIsDisplayed("Hello World!")
+        logStep("Verify welcome message is displayed")
+        verifyTextDisplayed("Hello World!")
     }
 
     fun verifySnackbarMessageIsDisplayed() = apply {
-        onView(snackbarMessage)
-            .check(matches(isDisplayed()))
-    }
-
-    // =========================
-    // Reusable Methods
-    // =========================
-
-    private fun verifyTextIsDisplayed(@StringRes textResId: Int) {
-        onView(withText(textResId))
-            .check(matches(isDisplayed()))
-    }
-
-    private fun verifyTextIsDisplayed(text: String) {
-        onView(withText(text))
-            .check(matches(isDisplayed()))
+        logStep("Verify snackbar message is displayed")
+        verifyElementDisplayed(snackbarMessage)
     }
 }

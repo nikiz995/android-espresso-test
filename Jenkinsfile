@@ -2,15 +2,14 @@ pipeline {
     agent any
 
     environment {
-        AVD_NAME = "Pixel_6"
+        GRADLE_USER_HOME = "${WORKSPACE}\\.gradle"
     }
 
     stages {
 
         stage('Checkout') {
             steps {
-                git branch: 'main',
-                    url: 'https://github.com/nikiz995/android-espresso-test.git'
+                echo 'Code already checked out from Git SCM'
             }
         }
 
@@ -22,20 +21,16 @@ pipeline {
 
         stage('Build APKs') {
             steps {
-                bat 'gradlew.bat assembleDebug assembleDebugAndroidTest'
+                bat 'gradlew.bat --refresh-dependencies assembleDebug assembleDebugAndroidTest'
             }
         }
 
-        stage('Start Emulator') {
+        stage('Check Emulator') {
             steps {
                 bat '''
-                start /B emulator -avd %AVD_NAME% -no-snapshot -no-audio -no-boot-anim
-
+                adb devices
                 adb wait-for-device
-
-                timeout /t 20
-
-                adb shell input keyevent 82
+                adb shell input keyevent 3
                 '''
             }
         }
