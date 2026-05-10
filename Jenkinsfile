@@ -1,4 +1,5 @@
 pipeline {
+
     agent any
 
     environment {
@@ -9,23 +10,28 @@ pipeline {
 
         stage('Checkout') {
             steps {
-                echo 'Code already checked out from Git SCM'
+                echo 'Using repository configured in Jenkins SCM'
+                checkout scm
             }
         }
 
-        stage('Clean') {
+        stage('Clean Workspace') {
             steps {
                 bat 'gradlew.bat clean'
             }
         }
 
-        stage('Build APKs') {
+        stage('Build Debug APKs') {
             steps {
-                bat 'gradlew.bat --refresh-dependencies assembleDebug assembleDebugAndroidTest'
+                bat '''
+                gradlew.bat --refresh-dependencies ^
+                assembleDebug ^
+                assembleDebugAndroidTest
+                '''
             }
         }
 
-        stage('Check Emulator') {
+        stage('Verify Connected Device') {
             steps {
                 bat '''
                 adb devices
@@ -35,22 +41,54 @@ pipeline {
             }
         }
 
-        stage('Run Espresso Tests') {
+        stage('Execute Espresso Tests') {
             steps {
                 bat 'gradlew.bat connectedAndroidTest'
+            }
+        }
+
+        stage('Pull Test Screenshots') {
+            steps {
+                bat '''
+                if not exist app\\build\\reports\\androidTests\\connected\\screenshots (
+                    mkdir app\\build\\reports\\androidTests\\connected\\screenshots
+                )
+
+                adb pull /sdcard/Download/referenceandroid-test-screenshots ^
+                app/build/reports/androidTests/connected/screenshots
+                '''
             }
         }
     }
 
     post {
+
         always {
+
             bat 'adb devices'
 
-            archiveArtifacts artifacts: 'app/build/reports/androidTests/connected/**', allowEmptyArchive: true
-            archiveArtifacts artifacts: 'app/build/outputs/androidTest-results/**', allowEmptyArchive: true
+            archiveArtifacts(
+                artifacts: 'app/build/reports/androidTests/connected/**',
+                allowEmptyArchive: true
+            )
 
-            junit allowEmptyResults: true,
-                  testResults: 'app/build/outputs/androidTest-results/connected/**/*.xml'
+            archiveArtifacts(
+                artifacts: 'app/build/outputs/androidTest-results/**',
+                allowEmptyArchive: true
+            )
+
+            junit(
+                allowEmptyResults: true,
+                testResults: 'app/build/outputs/androidTest-results/connected/**/*.xml'
+            )
+        }
+
+        success {
+            echo 'Android Espresso execution completed successfully.'
+        }
+
+        failure {
+            echo 'Android Espresso execution failed.'
         }
     }
 }
