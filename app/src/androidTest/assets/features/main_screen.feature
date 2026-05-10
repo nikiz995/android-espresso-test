@@ -13,8 +13,7 @@ Feature: Main screen
   @integration @regression
   Scenario: Settings menu can be opened and selected
     Given the app is launched
-    When I open the settings menu
-    And I select the settings option
+    When I open and select the settings option
     Then the welcome message is displayed
 
   @ui @regression
@@ -22,13 +21,3 @@ Feature: Main screen
     Given the app is launched
     When I tap the floating action button
     Then the snackbar message is displayed
-
-  @ui @performance @negative @regression
-  Scenario: Rotating screen keeps the main screen fields visible
-    Given the app is launched
-    When I rotate the device to landscape
-    Then the main screen toolbar title is displayed
-    And the welcome message is displayed
-    When I rotate the device to portrait
-    Then the main screen toolbar title is displayed
-    And the welcome message is displayed

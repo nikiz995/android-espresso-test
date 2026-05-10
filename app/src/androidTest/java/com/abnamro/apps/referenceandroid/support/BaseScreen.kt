@@ -12,7 +12,7 @@ import org.hamcrest.Matcher
 /**
  * Generic reusable base class for screen/page-object actions.
  */
-open class BasePage {
+open class BaseScreen {
 
     protected fun clickElement(matcher: Matcher<View>) {
         onView(matcher)
@@ -42,4 +42,9 @@ open class BasePage {
     protected fun logStep(message: String) {
         println("STEP: $message")
     }
+
+   protected fun waitUntilVisible(viewMatcher: Matcher<View>) {
+    onView(viewMatcher)
+        .check(matches(isDisplayed()))
+}
 }

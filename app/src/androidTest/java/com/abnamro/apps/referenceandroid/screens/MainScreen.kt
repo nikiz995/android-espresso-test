@@ -7,7 +7,7 @@ import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.matcher.ViewMatchers.withText
 import androidx.test.platform.app.InstrumentationRegistry
 import com.abnamro.apps.referenceandroid.R
-import com.abnamro.apps.referenceandroid.support.BasePage
+import com.abnamro.apps.referenceandroid.support.BaseScreen
 import org.hamcrest.Matchers.allOf
 
 /**
@@ -18,40 +18,50 @@ import org.hamcrest.Matchers.allOf
  * 2. Expose user actions on this screen.
  * 3. Expose screen-level assertions.
  *
- * All action/assertion methods return MainScreen using apply {}
- * so method chaining can be used in step definitions.
+ * All action/assertion methods return MainScreen using apply {} so method chaining can be used in
+ * step definitions.
  */
-class MainScreen : BasePage() {
+class MainScreen : BaseScreen() {
 
     // Locators
-    private val floatingActionButton =
-        allOf(withId(R.id.fab), isDisplayed())
+    private val floatingActionButton = allOf(withId(R.id.fab), isDisplayed())
 
-    private val settingsMenuOption =
-        withText(R.string.action_settings)
+    private val settingsMenuOption = withText(R.string.action_settings)
 
     private val snackbarMessage =
-        allOf(
-            withId(com.google.android.material.R.id.snackbar_text),
-            withText("Replace with your own action"),
-            isDisplayed()
-        )
+            allOf(
+                    withId(com.google.android.material.R.id.snackbar_text),
+                    withText("Replace with your own action"),
+                    isDisplayed()
+            )
 
     // Actions
     fun openSettingsMenu() = apply {
         logStep("Open settings overflow menu")
         openActionBarOverflowOrOptionsMenu(
-            InstrumentationRegistry.getInstrumentation().targetContext
+                InstrumentationRegistry.getInstrumentation().targetContext
         )
         captureScreenshot("settings_menu_opened")
     }
 
     fun selectSettings() = apply {
         logStep("Select settings option")
+        waitUntilVisible(settingsMenuOption)
         clickElement(settingsMenuOption)
         captureScreenshot("settings_selected")
     }
 
+    fun openAndSelectSettings() = apply {
+        logStep("Open settings overflow menu and select settings")
+        openActionBarOverflowOrOptionsMenu(
+                InstrumentationRegistry.getInstrumentation().targetContext
+        )
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync()
+        waitUntilVisible(settingsMenuOption)
+        clickElement(settingsMenuOption)
+        captureScreenshot("settings_selected")
+    }
+    
     fun tapFloatingActionButton() = apply {
         logStep("Tap floating action button")
         clickElement(floatingActionButton)
@@ -61,10 +71,7 @@ class MainScreen : BasePage() {
     fun tapFloatingActionButton(times: Int) = apply {
         logStep("Tap floating action button $times time(s)")
 
-        repeat(times) {
-            tapFloatingActionButton()
-                .verifySnackbarMessageIsDisplayed()
-        }
+        repeat(times) { tapFloatingActionButton().verifySnackbarMessageIsDisplayed() }
 
         captureScreenshot("fab_clicked_${times}_times")
     }
@@ -79,11 +86,11 @@ class MainScreen : BasePage() {
         logStep("Perform repeated mixed interactions")
 
         tapFloatingActionButton()
-            .openSettingsMenu()
-            .pressDeviceBack()
-            .tapFloatingActionButton()
-            .openSettingsMenu()
-            .selectSettings()
+                .openSettingsMenu()
+                .pressDeviceBack()
+                .tapFloatingActionButton()
+                .openSettingsMenu()
+                .selectSettings()
 
         captureScreenshot("mixed_interactions_completed")
     }
@@ -110,8 +117,6 @@ class MainScreen : BasePage() {
     fun verifyMainScreenFieldsAfterRotation() = apply {
         logStep("Verify main screen fields after rotation")
 
-        verifyToolbarTitleIsDisplayed()
-            .verifyWelcomeMessageIsDisplayed()
-
+        verifyToolbarTitleIsDisplayed().verifyWelcomeMessageIsDisplayed()
     }
 }

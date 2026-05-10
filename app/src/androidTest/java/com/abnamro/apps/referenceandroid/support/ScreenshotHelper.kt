@@ -33,6 +33,7 @@ object ScreenshotHelper {
         clearScreenshotsOnce()
 
         val instrumentation = InstrumentationRegistry.getInstrumentation()
+        instrumentation.waitForIdleSync()
         val sanitizedFileName = fileName
             .toLowerCase(Locale.US)
             .replace("[^a-z0-9_-]".toRegex(), "_")
