@@ -1,4 +1,4 @@
-package com.abnamro.apps.referenceandroid.screens
+package com.abnamro.apps.referenceandroid.support
 
 import android.view.View
 import androidx.annotation.StringRes
@@ -10,10 +10,9 @@ import androidx.test.espresso.matcher.ViewMatchers.withText
 import org.hamcrest.Matcher
 
 /**
- * Base class for all Page Object Model screen classes.
- * Keeps common Espresso actions and assertions reusable.
+ * Generic reusable base class for screen/page-object actions.
  */
-open class BaseScreen {
+open class BasePage {
 
     protected fun clickElement(matcher: Matcher<View>) {
         onView(matcher)
@@ -36,7 +35,11 @@ open class BaseScreen {
             .check(matches(isDisplayed()))
     }
 
-    protected fun logStep(step: String) {
-        println("TEST STEP: $step")
+    protected fun captureScreenshot(name: String) {
+        ScreenshotHelper.capture(name)
+    }
+
+    protected fun logStep(message: String) {
+        println("STEP: $message")
     }
 }

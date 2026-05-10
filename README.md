@@ -14,6 +14,8 @@ The main goal of this project is to use a native Android app using Espresso, Cuc
 - Page object style screen class for reusable actions and checks
 - Screenshot capture during test runs
 - Fastlane commands for easier build and test execution
+- Jenkins CI pipeline integration
+
 
 ## Test Coverage
 
@@ -26,14 +28,39 @@ The tests cover the basic user flows in the app:
 - Floating action button shows the snackbar
 - Some repeated and negative interactions keep the app stable
 
+
 ## Project Structure
 
 ```text
-app/src/main/                 App source code
-app/src/androidTest/java/     Espresso tests, Cucumber steps, screens, helpers
-app/src/androidTest/assets/   Cucumber feature files
-fastlane/Fastfile             Fastlane test and build commands
-```
+app/src/androidTest/
+
+├── assets/
+│    └── features/
+│         ├── main_screen.feature
+│         └── negative_main_screen.feature
+│
+├── java/com/abnamro/apps/referenceandroid/
+│
+│    ├── screens/
+│    │     └── MainScreen.kt
+│    │
+│    ├── steps/
+│    │     └── MainScreenSteps.kt
+│    │
+│    ├── support/
+│    │     ├── BasePage.kt
+│    │     ├── BaseTest.kt
+│    │     ├── EspressoIdlingResource.kt
+│    │     └── ScreenshotHelper.kt
+│    │
+│    └── runner/
+│          ├── CucumberTestRunner.kt
+│          └── MainScreenActivityScenarioTest.kt
+│
+├── fastlane/
+│    └── Fastfile
+│
+└── Jenkinsfile
 
 ## Running The Tests
 
@@ -98,3 +125,11 @@ app/build/reports/androidTests/connected/screenshots/
 ```
 
 
+# Remove old screenshots from device
+adb shell rm -rf /sdcard/Download/referenceandroid-test-screenshots
+
+# Keep screen awake while charging (USB/AC)
+adb shell settings put global stay_on_while_plugged_in 3
+
+# Prevent device from sleeping during test execution
+adb shell svc power stayon true

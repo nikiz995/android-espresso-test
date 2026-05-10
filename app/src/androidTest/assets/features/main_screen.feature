@@ -22,3 +22,13 @@ Feature: Main screen
     Given the app is launched
     When I tap the floating action button
     Then the snackbar message is displayed
+
+  @ui @performance @negative @regression
+  Scenario: Rotating screen keeps the main screen fields visible
+    Given the app is launched
+    When I rotate the device to landscape
+    Then the main screen toolbar title is displayed
+    And the welcome message is displayed
+    When I rotate the device to portrait
+    Then the main screen toolbar title is displayed
+    And the welcome message is displayed
