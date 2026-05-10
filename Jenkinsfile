@@ -10,8 +10,8 @@ pipeline {
 
         stage('Checkout') {
             steps {
-                echo 'Using repository configured in Jenkins SCM'
-                checkout scm
+              git branch: 'main',
+                    url: 'https://github.com/nikiz995/android-espresso-test.git'
             }
         }
 
