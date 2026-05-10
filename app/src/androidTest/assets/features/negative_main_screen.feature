@@ -23,3 +23,4 @@ Feature: Main screen negative scenarios
     Given the app is launched
     When I perform repeated mixed interactions
     Then the welcome message is displayed
+

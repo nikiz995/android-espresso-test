@@ -3,6 +3,10 @@ package com.abnamro.apps.referenceandroid.support
 import androidx.test.platform.app.InstrumentationRegistry
 import java.util.Locale
 
+/**
+ * Reusable utility for capturing and managing screenshots
+ */
+
 object ScreenshotHelper {
 
     private const val SCREENSHOTS_DIRECTORY =
