@@ -32,12 +32,8 @@ class MainScreenSteps : BaseTest() {
 
     @Given("the app is launched")
     fun theAppIsLaunched() {
-
         launchApplication()
-
-        mainScreen
-            .verifyToolbarTitleIsDisplayed()
-            .verifyWelcomeMessageIsDisplayed()
+        mainScreen.verifyToolbarTitleIsDisplayed().verifyWelcomeMessageIsDisplayed()
     }
 
     @When("I open the settings menu")
@@ -72,17 +68,13 @@ class MainScreenSteps : BaseTest() {
 
     @When("I rotate the device to landscape")
     fun iRotateTheDeviceToLandscape() {
-
         rotateDeviceToLandscape()
-
         mainScreen.verifyMainScreenFieldsAfterRotation()
     }
 
     @When("I rotate the device to portrait")
     fun iRotateTheDeviceToPortrait() {
-
         rotateDeviceToPortrait()
-
         mainScreen.verifyMainScreenFieldsAfterRotation()
     }
 
@@ -99,5 +91,10 @@ class MainScreenSteps : BaseTest() {
     @Then("the snackbar message is displayed")
     fun theSnackbarMessageIsDisplayed() {
         mainScreen.verifySnackbarMessageIsDisplayed()
+    }
+
+    @When("I open and select the settings option")
+    fun iOpenAndSelectTheSettingsOption() {
+        mainScreen.openAndSelectSettings()
     }
 }

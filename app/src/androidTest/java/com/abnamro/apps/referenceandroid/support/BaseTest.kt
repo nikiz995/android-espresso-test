@@ -7,35 +7,32 @@ import androidx.test.espresso.IdlingRegistry
 import androidx.test.platform.app.InstrumentationRegistry
 
 /**
- * Generic test base class for activity lifecycle, idling resource registration,
- * orientation changes, and screenshot utilities.
+ * Generic test base class for activity lifecycle, idling resource registration, orientation
+ * changes, and screenshot utilities.
  */
 open class BaseTest {
 
     protected var launchedActivity: Activity? = null
 
     protected fun beforeScenarioSetup() {
-        IdlingRegistry.getInstance().register(
-            EspressoIdlingResource.countingIdlingResource
-        )
+        IdlingRegistry.getInstance().register(EspressoIdlingResource.countingIdlingResource)
         ScreenshotHelper.clearScreenshotsOnce()
     }
 
     protected fun afterScenarioTearDown() {
         closeApplication()
-        IdlingRegistry.getInstance().unregister(
-            EspressoIdlingResource.countingIdlingResource
-        )
+        IdlingRegistry.getInstance().unregister(EspressoIdlingResource.countingIdlingResource)
     }
 
     protected fun launchApplication(): Activity {
         val instrumentation = InstrumentationRegistry.getInstrumentation()
         val context = instrumentation.targetContext
-        val launchIntent = requireNotNull(
-            context.packageManager
-                .getLaunchIntentForPackage(context.packageName)
-                ?.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-        ) { "Launch intent not found for package: ${context.packageName}" }
+        val launchIntent =
+                requireNotNull(
+                        context.packageManager
+                                .getLaunchIntentForPackage(context.packageName)
+                                ?.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                ) { "Launch intent not found for package: ${context.packageName}" }
 
         EspressoIdlingResource.increment()
         return try {
@@ -63,9 +60,10 @@ open class BaseTest {
     }
 
     private fun rotateDevice(orientation: Int) {
-        val activity = requireNotNull(launchedActivity) {
-            "Activity is not launched. Call 'Given the app is launched' first."
-        }
+        val activity =
+                requireNotNull(launchedActivity) {
+                    "Activity is not launched. Call 'Given the app is launched' first."
+                }
 
         val instrumentation = InstrumentationRegistry.getInstrumentation()
 
